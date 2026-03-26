@@ -5,8 +5,4 @@ class AdministratorNotifications::IntegrationsNotificationMailer < Administrator
     send_notification(subject, action_url: action_url)
   end
 
-  def dialogflow_disconnect
-    subject = 'Your Dialogflow integration was disconnected'
-    send_notification(subject)
-  end
 end

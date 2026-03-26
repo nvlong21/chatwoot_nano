@@ -15,8 +15,9 @@ RSpec.describe 'Campaigns API', type: :request do
     context 'when it is an authenticated user' do
       let(:agent) { create(:user, account: account, role: :agent) }
       let(:administrator) { create(:user, account: account, role: :administrator) }
-      let(:inbox) { create(:inbox, account: account) }
-      let!(:campaign) { create(:campaign, account: account, inbox: inbox, trigger_rules: { url: 'https://test.com' }) }
+      let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
+      let!(:twilio_inbox) { create(:inbox, channel: twilio_sms, account: account) }
+      let!(:campaign) { create(:campaign, account: account, inbox: twilio_inbox) }
 
       it 'returns unauthorized for agents' do
         get "/api/v1/accounts/#{account.id}/campaigns",
@@ -39,7 +40,7 @@ RSpec.describe 'Campaigns API', type: :request do
   end
 
   describe 'GET /api/v1/accounts/{account.id}/campaigns/:id' do
-    let(:campaign) { create(:campaign, account: account, trigger_rules: { url: 'https://test.com' }) }
+    let(:campaign) { create(:campaign, account: account) }
 
     context 'when it is an unauthenticated user' do
       it 'returns unauthorized' do
@@ -73,12 +74,13 @@ RSpec.describe 'Campaigns API', type: :request do
   end
 
   describe 'POST /api/v1/accounts/{account.id}/campaigns' do
-    let(:inbox) { create(:inbox, account: account) }
-
     context 'when it is an unauthenticated user' do
+      let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
+      let!(:twilio_inbox) { create(:inbox, channel: twilio_sms, account: account) }
+
       it 'returns unauthorized' do
         post "/api/v1/accounts/#{account.id}/campaigns",
-             params: { inbox_id: inbox.id, title: 'test', message: 'test message' },
+             params: { inbox_id: twilio_inbox.id, title: 'test', message: 'test message' },
              as: :json
 
         expect(response).to have_http_status(:unauthorized)
@@ -88,48 +90,19 @@ RSpec.describe 'Campaigns API', type: :request do
     context 'when it is an authenticated user' do
       let(:agent) { create(:user, account: account, role: :agent) }
       let(:administrator) { create(:user, account: account, role: :administrator) }
+      let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
+      let!(:twilio_inbox) { create(:inbox, channel: twilio_sms, account: account) }
 
       it 'returns unauthorized for agents' do
         post "/api/v1/accounts/#{account.id}/campaigns",
-             params: { inbox_id: inbox.id, title: 'test', message: 'test message' },
+             params: { inbox_id: twilio_inbox.id, title: 'test', message: 'test message' },
              headers: agent.create_new_auth_token,
              as: :json
 
         expect(response).to have_http_status(:unauthorized)
       end
 
-      it 'creates a new campaign' do
-        post "/api/v1/accounts/#{account.id}/campaigns",
-             params: { inbox_id: inbox.id, title: 'test', message: 'test message' },
-             headers: administrator.create_new_auth_token,
-             as: :json
-
-        expect(response).to have_http_status(:success)
-        expect(JSON.parse(response.body, symbolize_names: true)[:title]).to eq('test')
-      end
-
-      it 'creates a new ongoing campaign' do
-        post "/api/v1/accounts/#{account.id}/campaigns",
-             params: { inbox_id: inbox.id, title: 'test', message: 'test message', trigger_rules: { url: 'https://test.com' } },
-             headers: administrator.create_new_auth_token,
-             as: :json
-
-        expect(response).to have_http_status(:success)
-        expect(JSON.parse(response.body, symbolize_names: true)[:title]).to eq('test')
-      end
-
-      it 'throws error when invalid url provided for ongoing campaign' do
-        post "/api/v1/accounts/#{account.id}/campaigns",
-             params: { inbox_id: inbox.id, title: 'test', message: 'test message', trigger_rules: { url: 'javascript' } },
-             headers: administrator.create_new_auth_token,
-             as: :json
-
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-
       it 'creates a new oneoff campaign' do
-        twilio_sms = create(:channel_twilio_sms, account: account)
-        twilio_inbox = create(:inbox, channel: twilio_sms, account: account)
         label1 = create(:label, account: account)
         label2 = create(:label, account: account)
         scheduled_at = 2.days.from_now
@@ -154,13 +127,14 @@ RSpec.describe 'Campaigns API', type: :request do
   end
 
   describe 'PATCH /api/v1/accounts/{account.id}/campaigns/:id' do
-    let(:inbox) { create(:inbox, account: account) }
-    let!(:campaign) { create(:campaign, account: account, trigger_rules: { url: 'https://test.com' }) }
+    let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
+    let!(:twilio_inbox) { create(:inbox, channel: twilio_sms, account: account) }
+    let!(:campaign) { create(:campaign, account: account, inbox: twilio_inbox) }
 
     context 'when it is an unauthenticated user' do
       it 'returns unauthorized' do
         patch "/api/v1/accounts/#{account.id}/campaigns/#{campaign.display_id}",
-              params: { inbox_id: inbox.id, title: 'test', message: 'test message' },
+              params: { inbox_id: twilio_inbox.id, title: 'test', message: 'test message' },
               as: :json
 
         expect(response).to have_http_status(:unauthorized)
@@ -173,7 +147,7 @@ RSpec.describe 'Campaigns API', type: :request do
 
       it 'returns unauthorized for agents' do
         patch "/api/v1/accounts/#{account.id}/campaigns/#{campaign.display_id}",
-              params: { inbox_id: inbox.id, title: 'test', message: 'test message' },
+              params: { inbox_id: twilio_inbox.id, title: 'test', message: 'test message' },
               headers: agent.create_new_auth_token,
               as: :json
 
@@ -182,7 +156,7 @@ RSpec.describe 'Campaigns API', type: :request do
 
       it 'updates the campaign' do
         patch "/api/v1/accounts/#{account.id}/campaigns/#{campaign.display_id}",
-              params: { inbox_id: inbox.id, title: 'test', message: 'test message' },
+              params: { inbox_id: twilio_inbox.id, title: 'test', message: 'test message' },
               headers: administrator.create_new_auth_token,
               as: :json
 
@@ -193,8 +167,9 @@ RSpec.describe 'Campaigns API', type: :request do
   end
 
   describe 'DELETE /api/v1/accounts/{account.id}/campaigns/:id' do
-    let(:inbox) { create(:inbox, account: account) }
-    let!(:campaign) { create(:campaign, account: account, trigger_rules: { url: 'https://test.com' }) }
+    let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
+    let!(:twilio_inbox) { create(:inbox, channel: twilio_sms, account: account) }
+    let!(:campaign) { create(:campaign, account: account, inbox: twilio_inbox) }
 
     context 'when it is an unauthenticated user' do
       it 'returns unauthorized' do

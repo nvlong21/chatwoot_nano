@@ -8,7 +8,6 @@ export const INBOX_TYPES = {
   EMAIL: 'Channel::Email',
   TELEGRAM: 'Channel::Telegram',
   LINE: 'Channel::Line',
-  SMS: 'Channel::Sms',
   INSTAGRAM: 'Channel::Instagram',
   TIKTOK: 'Channel::Tiktok',
   VOICE: 'Channel::Voice',

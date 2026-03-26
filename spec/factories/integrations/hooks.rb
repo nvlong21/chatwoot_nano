@@ -7,16 +7,6 @@ FactoryBot.define do
     access_token { SecureRandom.hex }
     reference_id { SecureRandom.hex }
 
-    trait :dialogflow do
-      app_id { 'dialogflow' }
-      settings { { project_id: 'test', credentials: {}, region: 'global' } }
-    end
-
-    trait :dyte do
-      app_id { 'dyte' }
-      settings { { api_key: 'api_key', organization_id: 'org_id' } }
-    end
-
     trait :google_translate do
       app_id { 'google_translate' }
       settings { { project_id: 'test', credentials: {} } }
@@ -38,15 +28,5 @@ FactoryBot.define do
       reference_id { 'test-store.myshopify.com' }
     end
 
-    trait :leadsquared do
-      app_id { 'leadsquared' }
-      settings do
-        {
-          'access_key' => SecureRandom.hex,
-          'secret_key' => SecureRandom.hex,
-          'endpoint_url' => 'https://api.leadsquared.com/'
-        }
-      end
-    end
   end
 end

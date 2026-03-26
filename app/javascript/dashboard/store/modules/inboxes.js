@@ -145,18 +145,12 @@ export const getters = {
   getSMSInboxes($state) {
     return $state.records.filter(
       item =>
-        item.channel_type === INBOX_TYPES.SMS ||
-        (item.channel_type === INBOX_TYPES.TWILIO && item.medium === 'sms')
+        item.channel_type === INBOX_TYPES.TWILIO && item.medium === 'sms'
     );
   },
   getWhatsAppInboxes($state) {
     return $state.records.filter(
       item => item.channel_type === INBOX_TYPES.WHATSAPP
-    );
-  },
-  dialogFlowEnabledInboxes($state) {
-    return $state.records.filter(
-      item => item.channel_type !== INBOX_TYPES.EMAIL
     );
   },
   getFacebookInboxByInstagramId: $state => instagramId => {

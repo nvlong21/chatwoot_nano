@@ -26,10 +26,10 @@ describe('#mutations', () => {
 
   describe('#ADD_INTEGRATION_HOOKS', () => {
     it('set integrations hook records', () => {
-      const state = { records: [{ id: 'dialogflow', hooks: [] }] };
+      const state = { records: [{ id: 'google_translate', hooks: [] }] };
       const hookRecord = {
         id: 1,
-        app_id: 'dialogflow',
+        app_id: 'google_translate',
         status: false,
         inbox: { id: 1, name: 'Chatwoot' },
         account_id: 1,
@@ -39,7 +39,7 @@ describe('#mutations', () => {
       mutations[types.ADD_INTEGRATION_HOOKS](state, hookRecord);
       expect(state.records).toEqual([
         {
-          id: 'dialogflow',
+          id: 'google_translate',
           hooks: [hookRecord],
         },
       ]);
@@ -51,11 +51,11 @@ describe('#mutations', () => {
       const state = {
         records: [
           {
-            id: 'dialogflow',
+            id: 'google_translate',
             hooks: [
               {
                 id: 1,
-                app_id: 'dialogflow',
+                app_id: 'google_translate',
                 status: false,
                 inbox: { id: 1, name: 'Chatwoot' },
                 account_id: 1,
@@ -67,12 +67,12 @@ describe('#mutations', () => {
         ],
       };
       mutations[types.DELETE_INTEGRATION_HOOKS](state, {
-        appId: 'dialogflow',
+        appId: 'google_translate',
         hookId: 1,
       });
       expect(state.records).toEqual([
         {
-          id: 'dialogflow',
+          id: 'google_translate',
           hooks: [],
         },
       ]);

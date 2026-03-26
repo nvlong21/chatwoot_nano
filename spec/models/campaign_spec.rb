@@ -10,9 +10,9 @@ RSpec.describe Campaign do
 
   describe '.before_create' do
     let(:account) { create(:account) }
-    let(:website_channel) { create(:channel_widget, account: account) }
-    let(:website_inbox) { create(:inbox, channel: website_channel, account: account) }
-    let(:campaign) { build(:campaign, account: account, inbox: website_inbox, display_id: nil, trigger_rules: { url: 'https://test.com' }) }
+    let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
+    let!(:twilio_inbox) { create(:inbox, channel: twilio_sms, account: account) }
+    let(:campaign) { build(:campaign, account: account, inbox: twilio_inbox, display_id: nil) }
 
     before do
       campaign.save!
@@ -24,7 +24,7 @@ RSpec.describe Campaign do
     end
   end
 
-  context 'when Inbox other then Website or Twilio SMS' do
+  context 'when Inbox is not a supported type' do
     before do
       stub_request(:post, /graph.facebook.com/)
     end
@@ -42,8 +42,9 @@ RSpec.describe Campaign do
 
   context 'when a campaign is completed' do
     let(:account) { create(:account) }
-    let(:web_widget) { create(:channel_widget, account: account) }
-    let!(:campaign) { create(:campaign, account: account, inbox: web_widget.inbox, campaign_status: :completed, trigger_rules: { url: 'https://test.com' }) }
+    let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
+    let!(:twilio_inbox) { create(:inbox, channel: twilio_sms, account: account) }
+    let!(:campaign) { create(:campaign, account: account, inbox: twilio_inbox, campaign_status: :completed) }
 
     it 'would prevent further updates' do
       campaign.title = 'new name'
@@ -62,19 +63,12 @@ RSpec.describe Campaign do
     end
   end
 
-  describe 'ensure_correct_campaign_attributes' do
+  describe 'trigger!' do
     context 'when Twilio SMS campaign' do
       let(:account) { create(:account) }
       let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
       let!(:twilio_inbox) { create(:inbox, channel: twilio_sms, account: account) }
       let(:campaign) { build(:campaign, account: account, inbox: twilio_inbox) }
-
-      it 'only saves campaign type as oneoff and wont leave scheduled_at empty' do
-        campaign.campaign_type = 'ongoing'
-        campaign.save!
-        expect(campaign.reload.campaign_type).to eq 'one_off'
-        expect(campaign.scheduled_at.present?).to be true
-      end
 
       it 'calls twilio service on trigger!' do
         sms_service = double
@@ -91,13 +85,6 @@ RSpec.describe Campaign do
       let!(:sms_inbox) { create(:inbox, channel: sms_channel, account: account) }
       let(:campaign) { build(:campaign, account: account, inbox: sms_inbox) }
 
-      it 'only saves campaign type as oneoff and wont leave scheduled_at empty' do
-        campaign.campaign_type = 'ongoing'
-        campaign.save!
-        expect(campaign.reload.campaign_type).to eq 'one_off'
-        expect(campaign.scheduled_at.present?).to be true
-      end
-
       it 'calls sms service on trigger!' do
         sms_service = double
         expect(Sms::OneoffSmsCampaignService).to receive(:new).with(campaign: campaign).and_return(sms_service)
@@ -106,23 +93,13 @@ RSpec.describe Campaign do
         campaign.trigger!
       end
     end
-
-    context 'when Website campaign' do
-      let(:campaign) { build(:campaign) }
-
-      it 'only saves campaign type as ongoing' do
-        campaign.campaign_type = 'one_off'
-        campaign.save!
-        expect(campaign.reload.campaign_type).to eq 'ongoing'
-      end
-    end
   end
 
   context 'when validating sender' do
     let(:account) { create(:account) }
     let(:user) { create(:user, account: account) }
-    let(:web_widget) { create(:channel_widget, account: account) }
-    let(:inbox) { create(:inbox, channel: web_widget, account: account) }
+    let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
+    let(:inbox) { create(:inbox, channel: twilio_sms, account: account) }
 
     it 'allows sender from the same account' do
       campaign = build(:campaign, inbox: inbox, account: account, sender: user)
@@ -143,8 +120,8 @@ RSpec.describe Campaign do
   context 'when validating inbox' do
     let(:account) { create(:account) }
     let(:other_account) { create(:account) }
-    let(:web_widget) { create(:channel_widget, account: account) }
-    let(:inbox) { create(:inbox, channel: web_widget, account: account) }
+    let!(:twilio_sms) { create(:channel_twilio_sms, account: account) }
+    let(:inbox) { create(:inbox, channel: twilio_sms, account: account) }
     let(:other_account_inbox) { create(:inbox, account: other_account) }
 
     it 'allows inbox from the same account' do

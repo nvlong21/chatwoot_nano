@@ -19,7 +19,6 @@ class Integrations::Hook < ApplicationRecord
 
   attr_readonly :app_id, :account_id, :inbox_id, :hook_type
   before_validation :ensure_hook_type
-  after_create :trigger_setup_if_crm
 
   # TODO: Remove guard once encryption keys become mandatory (target 3-4 releases out).
   encrypts :access_token, deterministic: true if Chatwoot.encryption_configured?
@@ -48,25 +47,13 @@ class Integrations::Hook < ApplicationRecord
     @app ||= Integrations::App.find(id: app_id)
   end
 
-  def slack?
-    app_id == 'slack'
-  end
-
-  def dialogflow?
-    app_id == 'dialogflow'
-  end
-
-  def notion?
-    app_id == 'notion'
-  end
-
   def disable
     update(status: 'disabled')
   end
 
   def process_event(_event)
     # OpenAI integration migrated to Captain::EditorService
-    # Other integrations (slack, dialogflow, etc.) handled via HookJob
+    # Other integrations (slack, google_translate, etc.) handled via HookJob
     { error: 'No processor found' }
   end
 
@@ -93,18 +80,5 @@ class Integrations::Hook < ApplicationRecord
     return if app.blank? || app.params[:settings_json_schema].blank?
 
     errors.add(:settings, ': Invalid settings data') unless JSONSchemer.schema(app.params[:settings_json_schema]).valid?(settings)
-  end
-
-  def trigger_setup_if_crm
-    # we need setup services to create data prerequisite to functioning of the integration
-    # in case of Leadsquared, we need to create a custom activity type for capturing conversations and transcripts
-    # https://apidocs.leadsquared.com/create-new-activity-type-api/
-    return unless crm_integration?
-
-    ::Crm::SetupJob.perform_later(id)
-  end
-
-  def crm_integration?
-    %w[leadsquared].include?(app_id)
   end
 end

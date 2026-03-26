@@ -2,20 +2,12 @@ import { getters } from '../../campaigns';
 import campaigns from './fixtures';
 
 describe('#getters', () => {
-  it('get ongoing campaigns', () => {
-    const state = { records: campaigns };
-    expect(getters.getCampaigns(state)('ongoing')).toEqual([
-      campaigns[0],
-      campaigns[2],
-    ]);
-  });
-
   it('get one_off campaigns', () => {
     const state = { records: campaigns };
     expect(getters.getCampaigns(state)('one_off')).toEqual([
+      campaigns[0],
       campaigns[1],
-      campaigns[3],
-      campaigns[4],
+      campaigns[2],
     ]);
   });
 
@@ -23,7 +15,7 @@ describe('#getters', () => {
     const state = { records: campaigns };
     expect(
       getters.getCampaigns(state)('one_off', ['Channel::Whatsapp'])
-    ).toEqual([campaigns[3]]);
+    ).toEqual([campaigns[1]]);
   });
 
   it('get campaigns by multiple channel types', () => {
@@ -33,7 +25,7 @@ describe('#getters', () => {
         'Channel::TwilioSms',
         'Channel::Sms',
       ])
-    ).toEqual([campaigns[1], campaigns[4]]);
+    ).toEqual([campaigns[0], campaigns[2]]);
   });
 
   it('get SMS campaigns', () => {
@@ -42,8 +34,8 @@ describe('#getters', () => {
       getCampaigns: getters.getCampaigns(state),
     };
     expect(getters.getSMSCampaigns(state, mockGetters)).toEqual([
-      campaigns[1],
-      campaigns[4],
+      campaigns[0],
+      campaigns[2],
     ]);
   });
 
@@ -53,18 +45,7 @@ describe('#getters', () => {
       getCampaigns: getters.getCampaigns(state),
     };
     expect(getters.getWhatsAppCampaigns(state, mockGetters)).toEqual([
-      campaigns[3],
-    ]);
-  });
-
-  it('get Live Chat campaigns', () => {
-    const state = { records: campaigns };
-    const mockGetters = {
-      getCampaigns: getters.getCampaigns(state),
-    };
-    expect(getters.getLiveChatCampaigns(state, mockGetters)).toEqual([
-      campaigns[0],
-      campaigns[2],
+      campaigns[1],
     ]);
   });
 

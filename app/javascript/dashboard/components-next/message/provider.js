@@ -62,7 +62,6 @@ const MessageControl = Symbol('MessageControl');
  * @property {string} data.roomName - Name of the room
  * @property {string} data.messageId - ID of the message
  * @property {'story_mention'} [imageType] - Flag to indicate this is a story mention
- * @property {'dyte'} [type] - Flag to indicate this is a dyte call
  * @property {EmailContent} [email] - Email content and metadata
  * @property {string|null} [ccEmail] - CC email addresses
  * @property {string|null} [bccEmail] - BCC email addresses

@@ -38,8 +38,6 @@ class HookListener < BaseListener
 
   def execute_hooks(event, message)
     message.account.hooks.find_each do |hook|
-      # In case of dialogflow, we would have a hook for each inbox.
-      # Which means we will execute the same hook multiple times if the below filter isn't there
       next if hook.inbox.present? && hook.inbox != message.inbox
       next unless supported_hook_event?(hook, event.name)
 
@@ -59,10 +57,7 @@ class HookListener < BaseListener
     return false if hook.disabled?
 
     supported_events_map = {
-      'slack' => ['message.created'],
-      'dialogflow' => ['message.created', 'message.updated'],
-      'google_translate' => ['message.created'],
-      'leadsquared' => ['contact.updated', 'conversation.created', 'conversation.resolved']
+      'google_translate' => ['message.created']
     }
 
     return false unless supported_events_map.key?(hook.app_id)

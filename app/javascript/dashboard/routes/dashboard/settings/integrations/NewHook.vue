@@ -38,30 +38,16 @@ export default {
   computed: {
     ...mapGetters({
       uiFlags: 'integrations/getUIFlags',
-      dialogFlowEnabledInboxes: 'inboxes/dialogFlowEnabledInboxes',
+      allInboxes: 'inboxes/getInboxes',
     }),
     inboxes() {
-      return this.dialogFlowEnabledInboxes
-        .filter(inbox => {
-          if (!this.isIntegrationDialogflow) {
-            return true;
-          }
-          return !this.connectedDialogflowInboxIds.includes(inbox.id);
-        })
-        .map(inbox => ({ label: inbox.name, value: inbox.id }));
-    },
-
-    connectedDialogflowInboxIds() {
-      if (!this.isIntegrationDialogflow) {
-        return [];
-      }
-      return this.integration.hooks.map(hook => hook.inbox?.id);
+      return this.allInboxes.map(inbox => ({
+        label: inbox.name,
+        value: inbox.id,
+      }));
     },
     formItems() {
       return this.integration.settings_form_schema;
-    },
-    isIntegrationDialogflow() {
-      return this.integration.id === 'dialogflow';
     },
   },
   methods: {

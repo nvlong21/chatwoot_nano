@@ -9,7 +9,7 @@ FactoryBot.define do
       campaign.inbox ||= create(
         :inbox,
         account: campaign.account,
-        channel: create(:channel_widget, account: campaign.account)
+        channel: create(:channel_twilio_sms, account: campaign.account)
       )
     end
 

@@ -693,16 +693,6 @@ RSpec.describe Conversation do
     end
   end
 
-  describe '#botintegration: when conversation created in inbox with dialogflow integration' do
-    let(:inbox) { create(:inbox) }
-    let(:hook) { create(:integrations_hook, :dialogflow, inbox: inbox) }
-    let(:conversation) { create(:conversation, inbox: hook.inbox) }
-
-    it 'returns conversation status as pending' do
-      expect(conversation.status).to eq('pending')
-    end
-  end
-
   describe '#delete conversation' do
     include ActiveJob::TestHelper
 

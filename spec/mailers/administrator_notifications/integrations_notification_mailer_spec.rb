@@ -24,19 +24,4 @@ RSpec.describe AdministratorNotifications::IntegrationsNotificationMailer do
     end
   end
 
-  describe 'dialogflow_disconnect' do
-    let(:mail) { described_class.with(account: account).dialogflow_disconnect.deliver_now }
-
-    it 'renders the subject' do
-      expect(mail.subject).to eq('Your Dialogflow integration was disconnected')
-    end
-
-    it 'renders the content' do
-      expect(mail.body.encoded).to include('Your Dialogflow integration was disconnected because of permission issues')
-    end
-
-    it 'renders the receiver email' do
-      expect(mail.to).to contain_exactly(administrator.email, another_administrator.email)
-    end
-  end
 end

@@ -97,7 +97,7 @@ export const useInbox = (inboxId = null) => {
   });
 
   const isASmsInbox = computed(() => {
-    return channelType.value === INBOX_TYPES.SMS || isATwilioSMSChannel.value;
+    return isATwilioSMSChannel.value;
   });
 
   const isATwilioWhatsAppChannel = computed(() => {

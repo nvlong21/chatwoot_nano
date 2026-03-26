@@ -177,58 +177,6 @@
           "ERROR_MESSAGE": "We were not able to authenticate Twilio credentials, please try again"
         }
       },
-      "SMS": {
-        "TITLE": "SMS Channel",
-        "DESC": "Start supporting your customers via SMS.",
-        "PROVIDERS": {
-          "LABEL": "API Provider",
-          "TWILIO": "Twilio",
-          "BANDWIDTH": "Bandwidth"
-        },
-        "API": {
-          "ERROR_MESSAGE": "We were not able to save the SMS channel"
-        },
-        "BANDWIDTH": {
-          "ACCOUNT_ID": {
-            "LABEL": "Account ID",
-            "PLACEHOLDER": "Please enter your Bandwidth Account ID",
-            "ERROR": "This field is required"
-          },
-          "API_KEY": {
-            "LABEL": "API Key",
-            "PLACEHOLDER": "Please enter your Bandwidth API Key",
-            "ERROR": "This field is required"
-          },
-          "API_SECRET": {
-            "LABEL": "API Secret",
-            "PLACEHOLDER": "Please enter your Bandwidth API Secret",
-            "ERROR": "This field is required"
-          },
-          "APPLICATION_ID": {
-            "LABEL": "Application ID",
-            "PLACEHOLDER": "Please enter your Bandwidth Application ID",
-            "ERROR": "This field is required"
-          },
-          "INBOX_NAME": {
-            "LABEL": "Inbox Name",
-            "PLACEHOLDER": "Please enter a inbox name",
-            "ERROR": "This field is required"
-          },
-          "PHONE_NUMBER": {
-            "LABEL": "Phone number",
-            "PLACEHOLDER": "Please enter the phone number from which message will be sent.",
-            "ERROR": "Please provide a valid phone number that starts with a `+` sign and does not contain any spaces."
-          },
-          "SUBMIT_BUTTON": "Create Bandwidth Channel",
-          "API": {
-            "ERROR_MESSAGE": "We were not able to authenticate Bandwidth credentials, please try again"
-          },
-          "API_CALLBACK": {
-            "TITLE": "Callback URL",
-            "SUBTITLE": "You have to configure the message callback URL in Bandwidth with the URL mentioned here."
-          }
-        }
-      },
       "WHATSAPP": {
         "TITLE": "WhatsApp Channel",
         "DESC": "Start supporting your customers via WhatsApp.",
@@ -460,10 +408,6 @@
           "EMAIL": {
             "TITLE": "Email",
             "DESCRIPTION": "Connect with Gmail, Outlook, or other providers"
-          },
-          "SMS": {
-            "TITLE": "SMS",
-            "DESCRIPTION": "Integrate SMS channel with Twilio or bandwidth"
           },
           "API": {
             "TITLE": "API",
@@ -1138,7 +1082,6 @@
       "TWITTER_PROFILE": "Twitter",
       "TWILIO_SMS": "Twilio SMS",
       "WHATSAPP": "WhatsApp",
-      "SMS": "SMS",
       "EMAIL": "Email",
       "TELEGRAM": "Telegram",
       "LINE": "Line",

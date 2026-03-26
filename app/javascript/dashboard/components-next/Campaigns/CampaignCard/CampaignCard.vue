@@ -6,7 +6,6 @@ import { getInboxIconByType } from 'dashboard/helper/inbox';
 
 import CardLayout from 'dashboard/components-next/CardLayout.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
-import LiveChatCampaignDetails from './LiveChatCampaignDetails.vue';
 import SMSCampaignDetails from './SMSCampaignDetails.vue';
 
 const props = defineProps({
@@ -17,10 +16,6 @@ const props = defineProps({
   message: {
     type: String,
     default: '',
-  },
-  isLiveChatType: {
-    type: Boolean,
-    default: false,
   },
   isEnabled: {
     type: Boolean,
@@ -52,9 +47,7 @@ const STATUS_COMPLETED = 'completed';
 
 const { formatMessage } = useMessageFormatter();
 
-const isActive = computed(() =>
-  props.isLiveChatType ? props.isEnabled : props.status !== STATUS_COMPLETED
-);
+const isActive = computed(() => props.status !== STATUS_COMPLETED);
 
 const statusTextColor = computed(() => ({
   'text-n-teal-11': isActive.value,
@@ -62,12 +55,6 @@ const statusTextColor = computed(() => ({
 }));
 
 const campaignStatus = computed(() => {
-  if (props.isLiveChatType) {
-    return props.isEnabled
-      ? t('CAMPAIGN.LIVE_CHAT.CARD.STATUS.ENABLED')
-      : t('CAMPAIGN.LIVE_CHAT.CARD.STATUS.DISABLED');
-  }
-
   return props.status === STATUS_COMPLETED
     ? t('CAMPAIGN.SMS.CARD.STATUS.COMPLETED')
     : t('CAMPAIGN.SMS.CARD.STATUS.SCHEDULED');
@@ -102,14 +89,7 @@ const inboxIcon = computed(() => {
         class="text-sm text-n-slate-11 line-clamp-1 [&>p]:mb-0 h-6"
       />
       <div class="flex items-center w-full h-6 gap-2 overflow-hidden">
-        <LiveChatCampaignDetails
-          v-if="isLiveChatType"
-          :sender="sender"
-          :inbox-name="inboxName"
-          :inbox-icon="inboxIcon"
-        />
         <SMSCampaignDetails
-          v-else
           :inbox-name="inboxName"
           :inbox-icon="inboxIcon"
           :scheduled-at="scheduledAt"
@@ -117,14 +97,6 @@ const inboxIcon = computed(() => {
       </div>
     </div>
     <div class="flex items-center justify-end w-20 gap-2">
-      <Button
-        v-if="isLiveChatType"
-        variant="faded"
-        size="sm"
-        color="slate"
-        icon="i-lucide-sliders-vertical"
-        @click="emit('edit')"
-      />
       <Button
         variant="faded"
         color="ruby"

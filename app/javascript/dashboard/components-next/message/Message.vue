@@ -35,7 +35,6 @@ import InstagramStoryBubble from './bubbles/InstagramStory.vue';
 import EmailBubble from './bubbles/Email/Index.vue';
 import UnsupportedBubble from './bubbles/Unsupported.vue';
 import ContactBubble from './bubbles/Contact.vue';
-import DyteBubble from './bubbles/Dyte.vue';
 import LocationBubble from './bubbles/Location.vue';
 import CSATBubble from './bubbles/CSAT.vue';
 import FormBubble from './bubbles/Form.vue';
@@ -308,10 +307,6 @@ const componentToRender = computed(() => {
 
   if (props.contentAttributes?.isUnsupported) {
     return UnsupportedBubble;
-  }
-
-  if (props.contentAttributes.type === 'dyte') {
-    return DyteBubble;
   }
 
   const instagramSharedTypes = [

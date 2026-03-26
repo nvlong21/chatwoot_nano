@@ -32,7 +32,6 @@ Rails.application.routes.draw do
     namespace :survey do
       resources :responses, only: [:show]
     end
-    resource :slack_uploads, only: [:show]
   end
 
   get '/health', to: 'health#show'
@@ -262,10 +261,6 @@ Rails.application.routes.draw do
             resource :authorization, only: [:create]
           end
 
-          namespace :notion do
-            resource :authorization, only: [:create]
-          end
-
           namespace :whatsapp do
             resource :authorization, only: [:create]
           end
@@ -278,38 +273,10 @@ Rails.application.routes.draw do
                 post :process_event
               end
             end
-            resource :slack, only: [:create, :update, :destroy], controller: 'slack' do
-              member do
-                get :list_all_channels
-              end
-            end
-            resource :dyte, controller: 'dyte', only: [] do
-              collection do
-                post :create_a_meeting
-                post :add_participant_to_meeting
-              end
-            end
             resource :shopify, controller: 'shopify', only: [:destroy] do
               collection do
                 post :auth
                 get :orders
-              end
-            end
-            resource :linear, controller: 'linear', only: [] do
-              collection do
-                delete :destroy
-                get :teams
-                get :team_entities
-                post :create_issue
-                post :link_issue
-                post :unlink_issue
-                get :search_issue
-                get :linked_issues
-              end
-            end
-            resource :notion, controller: 'notion', only: [] do
-              collection do
-                delete :destroy
               end
             end
           end
@@ -367,7 +334,6 @@ Rails.application.routes.draw do
       namespace :widget do
         resource :direct_uploads, only: [:create]
         resource :config, only: [:create]
-        resources :campaigns, only: [:index]
         resources :events, only: [:create]
         resources :messages, only: [:index, :create, :update]
         resources :conversations, only: [:index, :create] do
@@ -388,13 +354,6 @@ Rails.application.routes.draw do
         end
         resources :inbox_members, only: [:index]
         resources :labels, only: [:create, :destroy]
-        namespace :integrations do
-          resource :dyte, controller: 'dyte', only: [] do
-            collection do
-              post :add_participant_to_meeting
-            end
-          end
-        end
       end
     end
 
@@ -536,8 +495,7 @@ Rails.application.routes.draw do
   post 'webhooks/twitter', to: 'api/v1/webhooks#twitter_events'
   post 'webhooks/line/:line_channel_id', to: 'webhooks/line#process_payload'
   post 'webhooks/telegram/:bot_token', to: 'webhooks/telegram#process_payload'
-  post 'webhooks/sms/:phone_number', to: 'webhooks/sms#process_payload'
-  get 'webhooks/whatsapp/:phone_number', to: 'webhooks/whatsapp#verify'
+get 'webhooks/whatsapp/:phone_number', to: 'webhooks/whatsapp#verify'
   post 'webhooks/whatsapp/:phone_number', to: 'webhooks/whatsapp#process_payload'
   get 'webhooks/instagram', to: 'webhooks/instagram#verify'
   post 'webhooks/instagram', to: 'webhooks/instagram#events'
@@ -545,10 +503,6 @@ Rails.application.routes.draw do
   post 'webhooks/shopify', to: 'webhooks/shopify#events'
 
   namespace :twitter do
-    resource :callback, only: [:show]
-  end
-
-  namespace :linear do
     resource :callback, only: [:show]
   end
 
@@ -571,7 +525,6 @@ Rails.application.routes.draw do
   get 'google/callback', to: 'google/callbacks#show'
   get 'instagram/callback', to: 'instagram/callbacks#show'
   get 'tiktok/callback', to: 'tiktok/callbacks#show'
-  get 'notion/callback', to: 'notion/callbacks#show'
   # ----------------------------------------------------------------------
   # Routes for external service verifications
   get '.well-known/assetlinks.json' => 'android_app#assetlinks'

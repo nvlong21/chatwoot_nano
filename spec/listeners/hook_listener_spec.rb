@@ -43,9 +43,9 @@ describe HookListener do
     end
 
     context 'when hook is configured' do
-      it 'triggers hook job' do
-        hook = create(:integrations_hook, :dialogflow, account: account, inbox: inbox)
-        expect(HookJob).to receive(:perform_later).with(hook, 'message.updated', message: message).once
+      it 'does not trigger hook job since no integration supports message.updated' do
+        create(:integrations_hook, account: account)
+        expect(HookJob).not_to receive(:perform_later)
         listener.message_updated(event)
       end
     end
@@ -66,13 +66,6 @@ describe HookListener do
     context 'when hook is enabled and app_id is supported' do
       it 'enqueues the job for slack' do
         hook = create(:integrations_hook, account: account)
-        expect(HookJob).to receive(:perform_later).with(hook, event_name, message: message)
-
-        listener.message_created(event)
-      end
-
-      it 'enqueues the job for dialogflow' do
-        hook = create(:integrations_hook, :dialogflow, account: account, inbox: inbox)
         expect(HookJob).to receive(:perform_later).with(hook, event_name, message: message)
 
         listener.message_created(event)
@@ -104,28 +97,5 @@ describe HookListener do
       end
     end
 
-    context 'with leadsquared hook' do
-      let(:hook) { create(:integrations_hook, :leadsquared, account: account) }
-
-      before do
-        account.enable_features(:crm_integration)
-      end
-
-      it 'enqueues the job for conversation.created' do
-        expect(HookJob)
-          .to receive(:perform_later)
-          .with(hook, 'conversation.created', { conversation: conversation })
-
-        listener.conversation_created(conversation_event)
-      end
-
-      it 'enqueues the job for contact.updated' do
-        expect(HookJob)
-          .to receive(:perform_later)
-          .with(hook, 'contact.updated', { contact: conversation.contact })
-
-        listener.contact_updated(contact_event)
-      end
-    end
   end
 end

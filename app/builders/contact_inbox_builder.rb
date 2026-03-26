@@ -19,8 +19,6 @@ class ContactInboxBuilder
       wa_source_id
     when 'Channel::Email'
       email_source_id
-    when 'Channel::Sms'
-      phone_source_id
     when 'Channel::Api', 'Channel::WebWidget'
       SecureRandom.uuid
     else
@@ -32,12 +30,6 @@ class ContactInboxBuilder
     raise ActionController::ParameterMissing, 'contact email' unless @contact.email
 
     @contact.email
-  end
-
-  def phone_source_id
-    raise ActionController::ParameterMissing, 'contact phone number' unless @contact.phone_number
-
-    @contact.phone_number
   end
 
   def wa_source_id
@@ -92,7 +84,7 @@ class ContactInboxBuilder
   end
 
   def new_source_id
-    if @inbox.whatsapp? || @inbox.sms? || @inbox.twilio?
+    if @inbox.whatsapp? || @inbox.twilio?
       "whatsapp:#{@source_id}#{rand(100)}"
     else
       "#{rand(10)}#{@source_id}"
@@ -100,7 +92,7 @@ class ContactInboxBuilder
   end
 
   def allowed_channels?
-    @inbox.email? || @inbox.sms? || @inbox.twilio? || @inbox.whatsapp?
+    @inbox.email? || @inbox.twilio? || @inbox.whatsapp?
   end
 end
 

@@ -5,13 +5,7 @@ describe('#getters', () => {
     const state = {
       records: [
         {
-          id: 'dyte',
-          name: 'dyte',
-          logo: 'test',
-          enabled: true,
-        },
-        {
-          id: 'dialogflow',
+          id: 'google_translate',
           name: 'test2',
           logo: 'test',
           enabled: true,
@@ -20,13 +14,7 @@ describe('#getters', () => {
     };
     expect(getters.getAppIntegrations(state)).toEqual([
       {
-        id: 'dyte',
-        name: 'dyte',
-        logo: 'test',
-        enabled: true,
-      },
-      {
-        id: 'dialogflow',
+        id: 'google_translate',
         name: 'test2',
         logo: 'test',
         enabled: true,

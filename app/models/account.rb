@@ -99,7 +99,6 @@ class Account < ApplicationRecord
   has_many :notification_settings, dependent: :destroy_async
   has_many :notifications, dependent: :destroy_async
   has_many :portals, dependent: :destroy_async, class_name: '::Portal'
-  has_many :sms_channels, dependent: :destroy_async, class_name: '::Channel::Sms'
   has_many :teams, dependent: :destroy_async
   has_many :telegram_channels, dependent: :destroy_async, class_name: '::Channel::Telegram'
   has_many :twilio_sms, dependent: :destroy_async, class_name: '::Channel::TwilioSms'

@@ -110,10 +110,6 @@ class Inbox < ApplicationRecord
     sanitized.blank? && email? ? display_name_from_email : sanitized
   end
 
-  def sms?
-    channel_type == 'Channel::Sms'
-  end
-
   def facebook?
     channel_type == 'Channel::FacebookPage'
   end
@@ -167,8 +163,7 @@ class Inbox < ApplicationRecord
   end
 
   def active_bot?
-    agent_bot_inbox&.active? || hooks.where(app_id: %w[dialogflow],
-                                            status: 'enabled').count.positive?
+    agent_bot_inbox&.active?
   end
 
   def inbox_type
@@ -186,8 +181,6 @@ class Inbox < ApplicationRecord
     case channel_type
     when 'Channel::TwilioSms'
       "#{ENV.fetch('FRONTEND_URL', nil)}/twilio/callback"
-    when 'Channel::Sms'
-      "#{ENV.fetch('FRONTEND_URL', nil)}/webhooks/sms/#{channel.phone_number.delete_prefix('+')}"
     when 'Channel::Line'
       "#{ENV.fetch('FRONTEND_URL', nil)}/webhooks/line/#{channel.line_channel_id}"
     when 'Channel::Whatsapp'

@@ -181,26 +181,6 @@ const location = computed(() =>
   })
 );
 
-const dyte = computed(() => {
-  return getMessage({
-    messageType: 1,
-    contentType: 'integrations',
-    contentAttributes: {
-      type: 'dyte',
-      data: {
-        meetingId: 'f16bebe6-08b9-4593-899a-849f59c47397',
-        roomName: 'zcufnc-adbjcg',
-      },
-    },
-    senderId: 1,
-    sender: {
-      id: 1,
-      name: 'Shivam Mishra',
-      availableName: 'Shivam Mishra',
-      type: 'user',
-    },
-  });
-});
 </script>
 
 <template>
@@ -249,11 +229,6 @@ const dyte = computed(() => {
     <Variant title="Location">
       <div class="p-4 bg-n-background rounded-lg w-full min-w-5xl grid">
         <Message :current-user-id="1" v-bind="location" />
-      </div>
-    </Variant>
-    <Variant title="Dyte Video">
-      <div class="p-4 bg-n-background rounded-lg w-full min-w-5xl grid">
-        <Message :current-user-id="1" v-bind="dyte" />
       </div>
     </Variant>
   </Story>
