@@ -1,5 +1,7 @@
 class ConvertDocumentToPolymorphicAssociation < ActiveRecord::Migration[7.0]
   def up
+    return unless table_exists?(:captain_assistant_responses)
+
     add_column :captain_assistant_responses, :documentable_type, :string
 
     # rubocop:disable Rails/SkipsModelValidations
