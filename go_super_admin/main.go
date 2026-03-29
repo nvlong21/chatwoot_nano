@@ -20,6 +20,10 @@ func main() {
 	}
 	log.Println("Connected to database")
 
+	if err := db.Migrate(); err != nil {
+		log.Fatalf("failed to run migrations: %v", err)
+	}
+
 	middleware.SetJWTSecret(cfg.SessionKey)
 	handlers.StoragePath = cfg.StoragePath
 
