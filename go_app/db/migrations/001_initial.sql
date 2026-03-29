@@ -1,0 +1,1 @@
+-- Initial migration placeholder. The schema already exists from the Rails app.

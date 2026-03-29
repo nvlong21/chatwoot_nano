@@ -73,21 +73,6 @@ class Rack::Attack
   ###-----Authentication Related Throttling---------###
   ###-----------------------------------------------###
 
-  ### Prevent Brute-Force Super Admin Login Attacks ###
-  throttle('super_admin_login/ip', limit: 5, period: 5.minutes) do |req|
-    req.ip if req.path_without_extentions == '/super_admin/sign_in' && req.post?
-  end
-
-  throttle('super_admin_login/email', limit: 5, period: 15.minutes) do |req|
-    if req.path_without_extentions == '/super_admin/sign_in' && req.post?
-      # NOTE: This line used to throw ArgumentError /rails/action_mailbox/sendgrid/inbound_emails : invalid byte sequence in UTF-8
-      # Hence placed in the if block
-      # ref: https://github.com/rack/rack-attack/issues/399
-      email = req.params['email'].presence || ActionDispatch::Request.new(req.env).params['email'].presence
-      email.to_s.downcase.gsub(/\s+/, '')
-    end
-  end
-
   # ### Prevent Brute-Force Login Attacks ###
   # Exclude MFA verification attempts from regular login throttling
   throttle('login/ip', limit: 5, period: 5.minutes) do |req|

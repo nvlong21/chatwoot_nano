@@ -88,11 +88,6 @@ gem 'devise-two-factor', '>= 5.0.0'
 gem 'jwt'
 gem 'pundit'
 
-# super admin
-gem 'administrate', '>= 0.20.1'
-gem 'administrate-field-active_storage', '>= 1.0.3'
-gem 'administrate-field-belongs_to_search', '>= 0.9.0'
-
 ##--- gems for pubsub service ---##
 # https://karolgalanciak.com/blog/2019/11/30/from-activerecord-callbacks-to-publish-slash-subscribe-pattern-and-event-driven-design/
 gem 'wisper', '2.0.0'
