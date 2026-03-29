@@ -91,6 +91,13 @@ const initials = computed(() => {
   return user.value.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
 })
 
+const avatarSrc = computed(() => user.value?.avatar_url || null)
+
+function onAvatarError(e) {
+  e.target.style.display = 'none'
+  e.target.nextElementSibling?.classList.remove('hidden')
+}
+
 function formatDate(val) {
   if (!val) return '—'
   return new Date(val).toLocaleString()
@@ -102,8 +109,9 @@ function formatDate(val) {
     <!-- Page header -->
     <header class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
       <div class="flex items-center gap-4">
-        <div class="h-12 w-12 rounded-full bg-woot-100 flex items-center justify-center text-woot-500 font-semibold text-lg shrink-0">
-          {{ initials }}
+        <div class="h-12 w-12 rounded-full shrink-0 relative overflow-hidden bg-woot-100 flex items-center justify-center">
+          <img v-if="avatarSrc" :src="avatarSrc" @error="onAvatarError" class="absolute inset-0 w-full h-full object-cover rounded-full" />
+          <span class="text-woot-500 font-semibold text-lg">{{ initials }}</span>
         </div>
         <div>
           <div class="flex items-center gap-2">

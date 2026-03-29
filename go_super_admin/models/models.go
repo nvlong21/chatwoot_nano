@@ -44,19 +44,46 @@ func (j *JSONB) Scan(value interface{}) error {
 
 // User represents both User and SuperAdmin (STI via type column)
 type User struct {
-	ID                int        `gorm:"primaryKey;column:id" json:"id"`
-	Name              string     `gorm:"column:name" json:"name"`
-	DisplayName       string     `gorm:"column:display_name" json:"display_name"`
-	Email             string     `gorm:"column:email" json:"email"`
-	EncryptedPassword string     `gorm:"column:encrypted_password" json:"-"`
-	Type              string     `gorm:"column:type" json:"type"`
-	ConfirmedAt       *time.Time `gorm:"column:confirmed_at" json:"confirmed_at"`
-	CreatedAt         time.Time  `gorm:"column:created_at" json:"created_at"`
-	UpdatedAt         time.Time  `gorm:"column:updated_at" json:"updated_at"`
+	ID                int           `gorm:"primaryKey;column:id" json:"id"`
+	Name              string        `gorm:"column:name" json:"name"`
+	DisplayName       string        `gorm:"column:display_name" json:"display_name"`
+	Email             string        `gorm:"column:email" json:"email"`
+	EncryptedPassword string        `gorm:"column:encrypted_password" json:"-"`
+	Type              string        `gorm:"column:type" json:"type"`
+	ConfirmedAt       *time.Time    `gorm:"column:confirmed_at" json:"confirmed_at"`
+	CreatedAt         time.Time     `gorm:"column:created_at" json:"created_at"`
+	UpdatedAt         time.Time     `gorm:"column:updated_at" json:"updated_at"`
 	AccountUsers      []AccountUser `gorm:"foreignKey:UserID" json:"account_users,omitempty"`
+	AvatarUrl         string        `gorm:"-" json:"avatar_url"`
 }
 
 func (User) TableName() string { return "users" }
+
+// ActiveStorageBlob represents a stored file blob
+type ActiveStorageBlob struct {
+	ID          int64     `gorm:"primaryKey;column:id"`
+	Key         string    `gorm:"column:key"`
+	Filename    string    `gorm:"column:filename"`
+	ContentType string    `gorm:"column:content_type"`
+	Checksum    string    `gorm:"column:checksum"`
+	ByteSize    int64     `gorm:"column:byte_size"`
+	ServiceName string    `gorm:"column:service_name"`
+	CreatedAt   time.Time `gorm:"column:created_at"`
+}
+
+func (ActiveStorageBlob) TableName() string { return "active_storage_blobs" }
+
+// ActiveStorageAttachment links a blob to a record
+type ActiveStorageAttachment struct {
+	ID         int64     `gorm:"primaryKey;column:id"`
+	Name       string    `gorm:"column:name"`
+	RecordType string    `gorm:"column:record_type"`
+	RecordID   int64     `gorm:"column:record_id"`
+	BlobID     int64     `gorm:"column:blob_id"`
+	CreatedAt  time.Time `gorm:"column:created_at"`
+}
+
+func (ActiveStorageAttachment) TableName() string { return "active_storage_attachments" }
 
 // Account represents a Chatwoot workspace
 type Account struct {
@@ -182,6 +209,17 @@ type InstallationConfig struct {
 
 func (InstallationConfig) TableName() string { return "installation_configs" }
 
+func (ic InstallationConfig) MarshalJSON() ([]byte, error) {
+	type Alias InstallationConfig
+	return json.Marshal(struct {
+		Alias
+		Value string `json:"value"`
+	}{
+		Alias: Alias(ic),
+		Value: ic.Value(),
+	})
+}
+
 func (ic *InstallationConfig) Value() string {
 	if v, ok := ic.SerializedValue["value"]; ok {
 		s := fmt.Sprintf("%v", v)
@@ -189,15 +227,24 @@ func (ic *InstallationConfig) Value() string {
 		// "--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess\nvalue: some_val\n"
 		if strings.HasPrefix(s, "---") {
 			for _, line := range strings.Split(s, "\n") {
-				if strings.HasPrefix(line, "value: ") {
-					val := strings.TrimPrefix(line, "value: ")
-					// Strip surrounding single-quotes used by YAML for special values
-					if len(val) >= 2 && val[0] == '\'' && val[len(val)-1] == '\'' {
-						val = strings.ReplaceAll(val[1:len(val)-1], "''", "'")
-					}
-					return val
+				// Match "value:" with or without trailing space/value
+				trimmed := strings.TrimPrefix(line, "value:")
+				if len(trimmed) == len(line) {
+					continue // line doesn't start with "value:"
 				}
+				val := strings.TrimSpace(trimmed)
+				// YAML null
+				if val == "~" || val == "null" {
+					return ""
+				}
+				// Strip surrounding single-quotes used by YAML for special values
+				if len(val) >= 2 && val[0] == '\'' && val[len(val)-1] == '\'' {
+					val = strings.ReplaceAll(val[1:len(val)-1], "''", "'")
+				}
+				return val
 			}
+			// YAML found but no "value:" key → return empty
+			return ""
 		}
 		return s
 	}

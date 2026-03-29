@@ -5,6 +5,7 @@ import (
 
 	"chatwoot/go_super_admin/config"
 	"chatwoot/go_super_admin/db"
+	"chatwoot/go_super_admin/handlers"
 	"chatwoot/go_super_admin/middleware"
 	"chatwoot/go_super_admin/router"
 
@@ -20,6 +21,7 @@ func main() {
 	log.Println("Connected to database")
 
 	middleware.SetJWTSecret(cfg.SessionKey)
+	handlers.StoragePath = cfg.StoragePath
 
 	opt, err := redis.ParseURL(cfg.RedisURL)
 	var redisClient *redis.Client

@@ -22,6 +22,7 @@ func Setup(redisClient *redis.Client) *gin.Engine {
 	api := r.Group("/super_admin/api")
 	{
 		api.POST("/auth/login", handlers.Login)
+		api.GET("/users/:id/avatar", handlers.UsersAvatarServe)
 
 		auth := api.Group("")
 		auth.Use(middleware.RequireSuperAdmin())
@@ -43,6 +44,7 @@ func Setup(redisClient *redis.Client) *gin.Engine {
 			auth.GET("/users/:id", handlers.UsersShow)
 			auth.PUT("/users/:id", handlers.UsersUpdate)
 			auth.DELETE("/users/:id", handlers.UsersDestroy)
+			auth.POST("/users/:id/avatar", handlers.UsersAvatarUpload)
 
 			auth.GET("/access_tokens", handlers.AccessTokensIndex)
 			auth.GET("/access_tokens/:id", handlers.AccessTokensShow)

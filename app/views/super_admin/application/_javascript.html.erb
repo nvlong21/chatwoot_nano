@@ -20,6 +20,7 @@ by providing a `content_for(:javascript)` block.
   <% end %>
 <% end %>
 
+<% if ChatwootHub.support_config[:support_website_token].present? %>
 <script>
 window.chatwootSettings = {
   hideMessageBubble: true,
@@ -46,5 +47,5 @@ window.addEventListener('chatwoot:ready', function() {
     name: '<%= SuperAdmin.first.name %>'
   });
 })
-
 </script>
+<% end %>

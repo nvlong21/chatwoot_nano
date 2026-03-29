@@ -131,10 +131,6 @@ func AppConfigsUpdate(c *gin.Context) {
 		if !allowed[key] {
 			continue
 		}
-		// Only upsert if a value was provided; skip empty to avoid overwriting existing data
-		if value == "" {
-			continue
-		}
 		db.DB.Exec(
 			`INSERT INTO installation_configs (name, serialized_value, locked, created_at, updated_at)
              VALUES (?, ?, false, NOW(), NOW())

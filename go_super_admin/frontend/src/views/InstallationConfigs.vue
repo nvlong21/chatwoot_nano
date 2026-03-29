@@ -14,14 +14,14 @@ onMounted(async () => {
 
 function startEdit(cfg) {
   editing.value = cfg.id
-  editValue.value = cfg.serialized_value?.value || ''
+  editValue.value = cfg.value || ''
 }
 
 async function saveEdit(cfg) {
   error.value = ''
   try {
     await client.put(`/installation_configs/${cfg.id}`, { value: editValue.value })
-    cfg.serialized_value = { value: editValue.value }
+    cfg.value = editValue.value
     editing.value = null
   } catch (e) {
     error.value = e.response?.data?.error || 'Error'
@@ -50,7 +50,7 @@ async function saveEdit(cfg) {
               <div v-if="editing === cfg.id">
                 <input v-model="editValue" class="border border-slate-200 rounded px-2 py-1 text-sm w-full focus:outline-none focus:ring-2 focus:ring-woot-500" />
               </div>
-              <span v-else class="text-slate-600 text-xs">{{ cfg.serialized_value?.value || '—' }}</span>
+              <span v-else class="text-slate-600 text-xs">{{ cfg.value || '—' }}</span>
             </td>
             <td class="px-4 py-3 flex gap-2">
               <template v-if="editing === cfg.id">
